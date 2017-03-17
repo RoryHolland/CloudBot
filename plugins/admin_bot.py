@@ -265,16 +265,20 @@ def part(text, conn, nick, message, chan, notice):
     :type chan: str
     """
     if text:
-        targets = text
+        split_text = text.split()
+        target = split_text[0]
+        if len(split_text) > 1:
+            message = ' '.join(text.split()[1:])
+        else:
+            message = ""
     else:
-        targets = chan
-    for target in targets.split():
-        if not target.startswith("#"):
-            target = "#{}".format(target)
-        if logchannel:
-            message("{} used PART to make me leave {}.".format(nick, target), logchannel)
-        notice("Attempting to leave {}...".format(target))
-        conn.part(target)
+        target = chan
+    if not target.startswith("#"):
+        target = "#{}".format(target)
+    if logchannel:
+        message("{} used PART to make me leave {}.".format(nick, target), logchannel)
+    notice("Attempting to leave {} with the following message: {}".format(target, message))
+    conn.part(target, message)
 
 
 @asyncio.coroutine

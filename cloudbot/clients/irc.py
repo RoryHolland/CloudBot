@@ -167,8 +167,11 @@ class IrcClient(Client):
         if channel not in self.channels:
             self.channels.append(channel)
 
-    def part(self, channel):
-        self.cmd("PART", channel)
+    def part(self, channel, message=None):
+        if message:
+            self.cmd("PART", channel, message)
+        else:
+            self.cmd("PART", channel)
         if channel in self.channels:
             self.channels.remove(channel)
 
