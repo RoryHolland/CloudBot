@@ -41,10 +41,45 @@ def load_text(bot):
 @hook.command
 def dh(text, message):
 
-    phrase = text_model.make_sentence().replace(" '", "'").replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" ,", ",")
-    if len(phrase) < 60:
-        phrase = phrase + " " + text_model.make_sentence().replace(" '", "'").replace(" .", ".").replace(" !", "!").replace(" ?", "?").replace(" ,", ",")
+    phrase = process_phrase(text_model.make_short_sentence(61)).capitalize()
+    while len(phrase) < 60:
+        phrase = "{}. {}".format(phrase, process_phrase(text_model.make_sentence()).capitalize())
     
     # act out the message
-    message(phrase)
+    message(process_phrase(phrase))
 
+
+def process_phrase(phrase):
+    # Remove spaces before apostrophes
+    phrase = phrase.replace(" '", "'")
+
+    # Remove spaces before full-stops
+    phrase = phrase.replace(" .", ".")
+
+    # Remove spaces before exclamation marks
+    phrase = phrase.replace(" !", "!")
+
+    # Remove spaces before question marks
+    phrase = phrase.replace(" ?", "?")
+
+    # Remove spaces before commas
+    phrase = phrase.replace(" ,", ",")
+
+    # Remove spaces which appear in words like can't and don't
+    phrase = phrase.replace(" n't", "n't")
+
+    # Hack to preserve elipses when running process_phrase() multiple times
+    phrase = phrase.replace("...", ".....")
+
+    # Remove duplicate full-stops
+    phrase = phrase.replace("..", ".")
+
+    # Remove full-stop after question mark
+    phrase = phrase.replace("?.", "?")
+
+    # Remove full-stop after exclamation mark
+    phrase = phrase.replace("!.", "!")
+
+    # Remove duplicate whitespace
+    phrase = ' '.join(phrase.split())
+    return phrase
